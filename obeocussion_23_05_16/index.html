@@ -1,0 +1,480 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>Minidrone Designer</title>
+
+        <link rel="stylesheet" href="css/reveal.css">
+        <link rel="stylesheet" href="css/theme/moon.css">
+
+        <!-- Theme used for syntax highlighting of code -->
+        <link rel="stylesheet" href="lib/css/zenburn.css">
+
+        <!-- Printing and PDF exports -->
+        <script>
+            var link = document.createElement( 'link' );
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+            document.getElementsByTagName( 'head' )[0].appendChild( link );
+        </script>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <!-- First slide -->
+                <section data-background="images/jslight.jpg">
+                    <h2>Minidrone Designer</h2>
+                        <p>
+                            <small>Roland Bary – Obeo</small>
+                        </p>
+                </section>
+                <!-- ARDroneSDK -->
+                <section data-background="images/jslight.jpg">
+                    <h3>ARDroneSDK</h3>
+                    <p>
+                        <ul>       
+                            <li>Version 3.8 sous licence libre</li>
+                            <li>Plusieurs implémentations :</br> Objective C, Java et C </li>
+                            <li><a href="https://github.com/Parrot-Developers/Samples">https://github.com/Parrot-Developers/Samples</a></li>
+                        </ul>   
+                    </p>
+                </section>
+                  <section data-background="images/jslight.jpg">
+                    <h3>ARDroneSDK</h3>
+                    <p>ihm.c</p>
+                    <pre>
+                        <code data-trim data-noescape>
+void *IHM_InputProcessing(void *data){
+    IHM_t *ihm = (IHM_t *) data;
+    int key = 0;
+    if (ihm != NULL){
+        while (ihm->run){
+            key = getch();
+
+            else if(key == KEY_UP){
+                if(ihm->onInputEventCallback != NULL){
+                    ihm->onInputEventCallback (IHM_INPUT_EVENT_FORWARD,
+                     ihm->customData);
+                }
+            }
+            usleep(10);
+        }
+    }
+    return NULL;
+}
+                        </code>
+                    </pre>
+                </section>
+                  <section data-background="images/jslight.jpg">
+                    <h3>ARDroneSDK</h3>
+                    <p>JumpingSumoPiloting.c</p>
+                    <pre>
+                        <code data-trim data-noescape>
+                            // IHM callbacks:
+void onInputEvent (eIHM_INPUT_EVENT event, void *customData){
+    // Manage IHM input events
+    ARCONTROLLER_Device_t *deviceController = (ARCONTROLLER_Device_t *)customData;
+    eARCONTROLLER_ERROR error = ARCONTROLLER_OK;
+    switch (event){
+        case IHM_INPUT_EVENT_FORWARD:
+            if(deviceController != NULL)
+            {
+                // set the flag and speed value of the piloting command
+                error = deviceController->jumpingSumo->
+                    setPilotingPCMDFlag (deviceController->jumpingSumo, 1);
+                error = deviceController->jumpingSumo->
+                    setPilotingPCMDSpeed (deviceController->jumpingSumo, 50);
+            }
+            break;
+        default:
+            break;
+}
+                        </code>
+                    </pre>
+                </section>
+
+                <!-- Demo Jumping Sumo piloting -->
+                <section data-background="images/jslight.jpg">
+                    <h3>Démo</h3>
+                    <img src="images/demo1.svg">
+                    
+                </section>
+
+                <!-- My Jumping Sumo Piloting -->
+                <section data-background="images/jslight.jpg">
+                    <h3>ARDroneSDK</h3>
+                    <p>MyJumpingSumoPiloting.c</p>
+                    <pre>
+                        <code data-trim>
+/** Create a discovery device to find a drone around **/
+discoveryDevice = ARDISCOVERY_Device_New();
+ARDISCOVERY_Device_InitWifi(discoveryDevice,
+ARDISCOVERY_PRODUCT_JS, "JS","192.168.2.1",44444);
+
+/** Create a device controller with the discovery device **/
+deviceController = ARCONTROLLER_Device_New(discoveryDevice);
+
+/** Add a command receive callback **/
+ARCONTROLLER_Device_AddCommandReceivedCallback(deviceController, 
+commandReceived, deviceController);
+
+/** Start the device controller **/
+ARCONTROLLER_Device_Start(deviceController);
+
+/** Using the device controller **/
+
+/** Stop the device controller **/
+void stopDeviceController(ARCONTROLLER_Device_t *deviceController) {
+    ARCONTROLLER_Device_Stop(deviceController);  
+}
+                        </code>
+                    </pre>
+                </section>
+                <section data-background="images/jslight.jpg">
+                    <h3>ARDroneSDK</h3>
+                    <p>MyJumpingSumoPiloting.c</p>
+                        <pre>
+                            <code data-trim>
+/** Send a command to move forward **/
+void straight(ARCONTROLLER_Device_t *deviceController, int distance){
+   deviceController->jumpingSumo->setPilotingPCMDFlag(
+            deviceController->jumpingSumo, 1);
+    deviceController->jumpingSumo->setPilotingPCMDSpeed(
+            deviceController->jumpingSumo, speedPercentage);
+usleep(computeStraightUsleep(distance, speedPercentage)); 
+}
+                            </code>
+                        </pre>
+                </section>
+                                <section data-background="images/jslight.jpg">
+                    <h3>ARDroneSDK</h3>
+                    <p>main.c</p>
+                        <pre>
+                            <code data-trim>
+int main(int argc, char **argv) {
+    //local declarations
+    /**Initialisation **/
+    // Create new discovery device
+    // Create new device controller
+    // start the device controller
+
+    /** Piloting **/
+    // Straight 1 m
+    straight(deviceController, 2);
+
+    // Jump High
+    jump(deviceController, HIGH);
+
+    /** End **/
+    stopDeviceController(deviceController);
+    return EXIT_SUCCESS;
+}
+                            </code>
+                        </pre>
+                </section>
+
+                 <!-- Demo Jumping Sumo piloting without IHM -->
+                <section data-background="images/jslight.jpg">
+                    <h3>Démo</h3>
+                    <img src="images/demo2.svg">
+                    <aside class="notes">
+                        <ul>
+                            <li><strong>On va faire exécuter une séquence d'instructions sans IHM.</strong></li>
+                        </ul>
+                    </aside>
+                </section>
+
+                <!--EMF -->
+                <section data-background="images/jslight.jpg">
+                    <h3>EMF</h3>
+                    <p>Un DSL décrivant un programme pour minidrone.</p>
+                    <img src="images/minidrone_metamodel_part_1.svg">
+                </section>
+
+                <section data-background="images/jslight.jpg">
+                    <h3>EMF</h3>
+                    <p>Un DSL décrivant un programme pour minidrone.</p>
+                    <img src="images/minidrone_metamodel_part_2.svg">
+                <aside class="notes">
+                    <ul>
+                        <li><strong>Au niveau des instructions atomiques, on a une instruction pour ...</strong></li>
+                    </ul>
+                </aside>
+                </section>
+
+                <!-- Sirius -->
+                <section data-background="images/jslight.jpg">
+                    <h3>Sirius</h3>
+                    <p>La spécification du modeleur.</p>
+                    <img src="images/odesign.svg">
+                </section>
+                <section data-background="images/jslight.jpg">
+                    <h3>Sirius</h3>
+                    <p>L'aspect graphique.</p>
+                    <img src="images/minidrone_designer_icons.svg">
+                         <ul>
+                            <li>Inkscape</li>
+                            <li><a href="https://design.google.com/icons/">https://design.google.com/icons/</a></li>
+                            <li><a href="https://thenounproject.com/">https://thenounproject.com/</a></li>
+                            <li><a href="http://www.materialpalette.com/deep-orange/cyan">http://www.materialpalette.com/deep-orange/cyan</a></li>     
+                        </ul>      
+                </section>
+                <!-- Acceleo Module -->
+                 <section data-background="images/jslight.jpg">
+                    <h3>Acceleo</h3>
+                    <p>Génération de code.</p>
+                    <pre>
+                        <code data-trim>
+int main(int argc, char **argv) {
+    //local declarations
+    /**Initialisation **/
+    // Create new discovery device
+    // Create new device controller
+    // start the device controller
+
+    /** Piloting **/
+    // Straight 1 m
+    straight(deviceController, 2);
+
+    // Turn 90°
+    turn(deviceController,90);
+
+    // Jump High
+    jump(deviceController, HIGH);
+
+    /** End **/
+    stopDeviceController(deviceController);
+    return EXIT_SUCCESS;
+}
+                        </code>
+                    </pre>
+                </section>
+
+                <!-- Plugin RCP -->
+                <section data-background="images/jslight.jpg">
+                    <h3>Eclipse RCP/Plugin</h3>
+                    <p>Minidrone Designer</p>
+                    <img src="images/minidrone_designer_rcp.svg">
+                </section>
+                 <!-- Plugin RCP Upload Handler -->
+                <section data-background="images/jslight.jpg">
+                    <h3>Eclipse RCP/Plugin</h3>
+                    <p>Upload du code généré.</p>
+                     <pre>
+                        <code data-trim data-noescape>
+/**
+* Called to upload the minidrone program generated to the minidrone
+* @param minidroneProgram
+*/
+public void upload(MiniDroneProgram minidroneProgram) {
+
+    // Call acceleo code generation
+    File genOutputFolder = generateCode(minidroneProgram);
+            
+    String compilePath = genOutputFolder.toString();    
+    String make_clean_command = "make clean -C " + compilePath;
+    String make_command = "make -C " + compilePath;
+    String make_run_command = "make run -C " + compilePath;
+            
+    // perform a make clean command on the C program folder
+    executeCommand(make_clean_command);
+            
+    // perform a make command on the C program folder
+    executeCommand(make_command);
+            
+    // perform a make run command on the C program folder
+    executeCommand(make_run_command);
+} 
+                        </code>
+                    </pre>
+                </section>
+                <section data-background="images/jslight.jpg">
+                    <h3>Neon target platform</h3>
+                       <a href="https://github.com/mbarbero/fr.obeo.releng.targetplatform">https://github.com/mbarbero/fr.obeo.releng.targetplatform</a>
+                    <img src="images/minidrone_target.png">
+
+                <!-- Build Maven Tycho -->
+                </section>
+                <section data-background="images/jslight.jpg">
+                    <h3>Maven Tycho</h3>
+                    <img src="images/buildmaventycho.svg">
+                </section>
+                <section data-background="images/jslight.jpg">
+                    <h3>Tests Junit</h3>
+                    <p>La validité du odesign.</p>
+                <pre>
+                    <code data-trim data-noescape>         
+/**
+ * Validation test on the VSM to check whether there is no error when
+ * validate VSM.
+ */
+@Test
+public void isValid() {
+    Diagnostician diagnostician = new Diagnostician();
+    Diagnostic diagnostic = diagnostician.validate(minidroneModeler);
+    switch (diagnostic.getSeverity()) {
+    case Diagnostic.ERROR:
+        fail("The VSM is not valid due to theses errors : " + diagnostic);
+    case Diagnostic.WARNING:
+        fail("The VSM is not valid due to theses warnings : " + diagnostic);
+        break;
+    }
+}
+                    </code>
+                </pre>
+                </section>
+
+                <section data-background="images/jslight.jpg">
+                    <h3>Tests Junit</h3>
+                    <p>Les expressions interpretées.</p>
+                <pre>
+                    <code data-trim data-noescape>
+/**
+ * Check whether a interpreted expression from the VSM is AQL or a Sirius Specific interpreter expression.
+*/
+@Test
+    public void isAQLorSpecificInterpreterExpressionCall(){
+        ServicesTestsUtils.isAQLServiceCall(underTest.getExpression());
+        ServicesTestsUtils.isSpecificInterpretedExpressionCall(underTest.getExpression());
+}
+
+                    </code>
+                </pre>
+                </section>
+
+                 <section data-background="images/jslight.jpg">
+                    <h3>Tests Junit</h3>
+                    <p>Les extensions Java.</p>
+                <pre>
+                    <code data-trim data-noescape>
+/**
+ * Check if a java extension referenced from the viewpoint specification exists
+ */
+@Test
+    public void existsOnlyValidJavaExtensions() {
+        Set<JavaExtension> allExtensions = new HashSet<JavaExtension>();
+
+        List<String> invalidJavaExtensions = new ArrayList<String>();
+        ServicesTestsUtils.collectJavaExtensionsFromMinidroneDesignerViewpoints(allExtensions);
+        for (JavaExtension extension : allExtensions) {
+            try {
+                Class.forName(extension.getQualifiedClassName());
+            } catch (ClassNotFoundException e) {
+                invalidJavaExtensions.add(e.getMessage());
+            }
+        }
+
+        if (!invalidJavaExtensions.isEmpty()) {
+            String message = "";
+            for (String invalidJavaExtension : invalidJavaExtensions) {
+                message += invalidJavaExtension + "\n";
+            }
+            fail("Java extensions not found : \n" + message);
+        }
+    }
+                    </code>
+                </pre>
+                </section>
+
+                 <section data-background="images/jslight.jpg">
+                    <h3>Tests Junit</h3>
+                    <p>Les services Java déclarés.</p>
+                    <pre>
+                        <code data-trim data-noescape>
+ /**
+ * Check whether all Java declared services are used
+ */
+@Test
+    public void isUnusedDeclaredService() {
+        if (!allServiceCalls.contains(underTest.getName())) {
+            fail("Declared service " + underTest + "is not referenced by the odesign");
+        }
+
+    }
+                        </code>
+                    </pre>
+                </section>
+
+                 <section data-background="images/jslight.jpg">
+                    <h3>Tests Junit</h3>
+                    <p>Les appels de services Java.</p>
+                <pre>
+                    <code data-trim data-noescape>
+/**
+ * Check if a service called from a interpreted expression exists.
+ */
+@Test
+public void isValidService() {
+    String expression = underTest.getExpression();
+    String service = ServicesTestsUtils.getServiceCall(expression);
+
+    if (service != null && !allServices.contains(service)) {
+        fail("The following expression :" + underTest.getExpression()
+                + "refers to an invalid service :" + service + " See :"
+                + underTest.getFeature().getName() + " of object "
+                + EcoreUtil.getURI(underTest.getDeclaration()));
+        }
+}
+                    </code>
+                </pre>
+                </section>
+
+                <section data-background="images/jslight.jpg">
+                    <h3>Intégration continue</h3>
+                    <img src="images/travis.svg">
+                </section>
+             
+                <section data-background="images/jslight.jpg">
+                    <h3>Des bonnes pratiques de développement</h3>
+                    <ul>
+                        <li>Checkstyle</li>
+                        <li>Java Formater</li>
+                        <li>Import Order</li>
+                    </ul>
+                </section>
+
+                <!-- Demo Minidrone Designer -->
+                <section data-background="images/jslight.jpg">
+                    <h3>Démo</h3>
+                    <img src="images/demo3.svg"/>
+                </section>
+
+                  <!-- Next step todo -->
+                <section data-background="images/jslight.jpg">
+                    <h3>L'étape d'après</h3>
+                    <ul>
+                        <li>Rolling Spider</li>
+                        <li>Automatisation de la chaîne de compilation en C</li>
+                        <li>Utilisation des vues propriétés Sirius</li>
+                        <li>Tests RCPTT</li>
+                        <li>Bundle du projet sur ObeoNetwork</li>
+                    </ul>
+                </section>
+                <section data-background="images/jslight.jpg">
+                    <h3>Merci !</h3>
+                </section>
+            </div>
+        </div>
+
+        <script src="lib/js/head.min.js"></script>
+        <script src="js/reveal.js"></script>
+
+        <script>
+            // More info https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                history: true,
+
+                // More info https://github.com/hakimel/reveal.js#dependencies
+                dependencies: [
+                    { src: 'plugin/markdown/marked.js' },
+                    { src: 'plugin/markdown/markdown.js' },
+                    { src: 'plugin/notes/notes.js', async: true },
+                    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+                ]
+            });
+        </script>
+    </body>
+</html>
