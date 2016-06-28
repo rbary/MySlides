@@ -37,6 +37,7 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
 	text-shadow: 0 0 0 #000 !important;
+	background-color: rgba(0,0,0,0.7);
 }
 
 .reveal pre code {
@@ -52,11 +53,13 @@ ul, ol, div, p {
 	display: block;
 	overflow: visible;
 	margin: auto;
+	background-color: rgba(0,0,0,0.7);
 }
 .reveal {
 	width: auto !important;
 	height: auto !important;
 	overflow: hidden !important;
+    background-color: rgba(0,0,0,0.7);
 }
 .reveal .slides {
 	position: static;
@@ -80,6 +83,8 @@ ul, ol, div, p {
 	   -moz-perspective-origin: 50% 50%;
 	    -ms-perspective-origin: 50% 50%;
 	        perspective-origin: 50% 50%;
+	background-color: rgba(0,0,0,0.7);
+
 }
 
 .reveal .slides section {
@@ -106,6 +111,8 @@ ul, ol, div, p {
 	   -moz-transform: none !important;
 	    -ms-transform: none !important;
 	        transform: none !important;
+		background-color: rgba(0,0,0,0.7);
+
 }
 
 .reveal section.stack {
