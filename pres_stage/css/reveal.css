@@ -5,11 +5,6 @@
  *
  * Copyright (C) 2016 Hakim El Hattab, http://hakim.se
  */
-
-/*********************************************
- * OTHERS STYLES
- **********************************************/
-
 /*********************************************
  * RESET STYLES
  *********************************************/
@@ -51,6 +46,12 @@ body {
   line-height: 1;
   background-color: #fff;
   color: #000; }
+
+html:-webkit-full-screen-ancestor {
+  background-color: inherit; }
+
+html:-moz-full-screen-ancestor {
+  background-color: inherit; }
 
 /*********************************************
  * VIEW FRAGMENTS
